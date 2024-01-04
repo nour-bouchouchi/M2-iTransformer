@@ -35,3 +35,23 @@ class MonDataLoaderAllData(Dataset):
       seq_x, seq_y = self.data[idx]
       return torch.tensor(seq_x), torch.tensor(seq_y)
       
+
+
+def get_loaders(data, batch_size, n_train, n_eval, n_test, T=96, S=96):
+    train_data = data[ : n_train+T+S]
+    val_data = data[n_train : n_train+n_eval+T+S]
+    test_data = data[n_train+n_eval : n_train+n_eval+n_test+T+S]
+
+    scaler = StandardScaler()
+    scaler.fit(train_data)
+
+    train_dataset = MonDataLoaderAllData(train_data, T, S, scaler=scaler)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+    eval_dataset = MonDataLoaderAllData(val_data, T, S, scaler=scaler)
+    eval_loader = DataLoader(eval_dataset, batch_size=batch_size, shuffle=True)
+
+    test_dataset = MonDataLoaderAllData(test_data, T, S, scaler = scaler)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, eval_loader, test_loader
