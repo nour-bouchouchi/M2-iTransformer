@@ -2,11 +2,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-def MAE(pred, true):
-    return np.mean(np.abs(pred - true))
+class MAELoss(nn.Module):
+    def __init__(self):
+        super(MAELoss, self).__init__()
 
-def MSE(pred, true):
-    return np.mean((pred - true) ** 2)
+    def forward(self, input, target):
+        return torch.mean(torch.abs(input - target))
 
 def eval(model, val_loader, device, criterion, writer, epoch):
     model.eval()
@@ -89,12 +90,17 @@ def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=N
 def test(model, test_loader, device):
     model.eval()
     criterion = nn.MSELoss()
+    maeLoss = MAELoss()
     loss_batch = []
+    loss_batch_mae = []
     with torch.no_grad():
         for i, (data, target) in enumerate(test_loader):
             data, target = data.float().to(device), target.float().to(device)
             yhat = model(data)
+
             loss = criterion(yhat, target)
+            loss_mae = maeLoss(yhat, target)
+
             loss_batch.append(loss.item())
-        
-        return np.mean(loss_batch), target, yhat
+            loss_batch_mae.append(loss_mae.item())
+        return np.mean(loss_batch), np.mean(loss_batch_mae), target, yhat
