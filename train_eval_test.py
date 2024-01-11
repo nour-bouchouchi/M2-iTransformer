@@ -36,13 +36,13 @@ def eval(model, val_loader, device, criterion, writer, epoch):
 
         return np.mean(epoch_loss)
         
-def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=None):
-    
+def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=None, patience=3):
     criterion = nn.MSELoss()
-    
+
     loss_values = []
     loss_eval = []
-
+    best_val_loss = float('inf')
+    counter = 0
 
     for epoch in range(nb_epoch):
         print("---- epoch : ", epoch)
@@ -61,31 +61,25 @@ def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=N
             loss.backward()
             optimizer.step()
 
-
         loss_values.append(np.mean(epoch_loss))
-
-        """
-        writer.add_scalar('Loss train', np.mean(epoch_loss), epoch)
-    
-        for name, weight in model.named_parameters():
-            writer.add_histogram(f'{name}', weight, epoch)
-            writer.add_histogram(f'{name}.grad', weight.grad, epoch)
-
-        entropie = criterion(logits,target)
-        writer.add_histogram('Entropy train', entropie, epoch)
-        
-        writer.add_scalar('Accuracy train', np.mean(epoch_accuracy), epoch)
-
-        """
 
         epoch_loss_eval = eval(model, val_loader, device, criterion, writer, epoch)
         loss_eval.append(epoch_loss_eval)
         print("loss train :", loss_values[-1])
         print("loss eval :", loss_eval[-1])
 
-        
-    return loss_values, loss_eval
+        # Early stopping check
+        if loss_eval[-1] < best_val_loss:
+            best_val_loss = loss_eval[-1]
+            counter = 0
+        else:
+            counter += 1
 
+        if counter >= patience:
+            print(f"Early stopping after {epoch} epochs without improvement.")
+            break
+
+    return loss_values, loss_eval
 
 def test(model, test_loader, device):
     model.eval()

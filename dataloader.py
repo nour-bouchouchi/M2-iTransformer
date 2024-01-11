@@ -24,7 +24,7 @@ class MonDataLoaderAllData(Dataset):
         self.data = d
 
     def __len__(self):
-        return len(self.data) -1 #- self.lookback_size - self.lookforward_size + 1
+        return len(self.data) - self.lookback_size -1 #- self.lookback_size - self.lookforward_size + 1
 
     def __getitem__(self, idx):
       seq_x, seq_y = self.data[idx]
@@ -34,7 +34,6 @@ class MonDataLoaderAllData(Dataset):
 
 def get_loaders(data, batch_size, n_train, n_eval, n_test, T=96, S=96):
     train_data = data[ : n_train+T+S]
-    print("train_data ", train_data.shape)
     val_data = data[n_train : n_train+n_eval+T+S]
     test_data = data[n_train+n_eval : n_train+n_eval+n_test+T+S]
 
