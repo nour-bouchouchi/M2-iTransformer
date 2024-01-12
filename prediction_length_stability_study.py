@@ -29,14 +29,14 @@ def save_scores(path, liste_loss_mse, liste_loss_mae):
             alternate_columns = [col for pair in zip(mse_resultats, mae_resultats) for col in pair]
             writer.writerow([longueur] + alternate_columns + [mse_moyenne, mse_variance, mae_moyenne, mae_variance])
 
-
+    
 def predict_lookforward(train_loader, eval_loader, test_loader, N, s, lr, D, hidden_dim, nb_blocks):
     """
     Permet de faire les prédictions pour un lookforward length donné (5 prédictions sur 5 seeds différentes)
     """    
     liste_loss_mse = []
     liste_loss_mae = []
-    for i in range(2):
+    for i in range(5):
         print(f"  --- i : {i} --- ")
         torch.manual_seed(i)
         np.random.seed(i)
@@ -111,7 +111,7 @@ def main():
         
         predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks)
         
-        break
+        
 
 
 
