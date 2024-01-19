@@ -35,7 +35,7 @@ class FeedForward(nn.Module):
 
     
 class Attention(nn.Module):
-    def __init__(self, D, proj_dim, nb_head=8, get_attention=False):
+    def __init__(self, D, proj_dim, nb_head=8):
         super(Attention, self).__init__()
         self.query_projection = nn.Linear(D, proj_dim)
         self.key_projection = nn.Linear(D, proj_dim)
@@ -43,9 +43,8 @@ class Attention(nn.Module):
         self.out_projection = nn.Linear(proj_dim, D)
         self.H = nb_head
         self.dropout = nn.Dropout(0.1)
-        self.get_attention = get_attention
 
-    def forward(self, queries, keys, values):
+    def forward(self, queries, keys, values, get_attention=False):
         B, L, _ = queries.shape
         _, S, _ = keys.shape
         H = self.H
@@ -65,15 +64,13 @@ class Attention(nn.Module):
 
         out = V.reshape(B,L,-1)
 
-        if self.get_attention : 
-           A = A.transpose(2, 3).reshape(B, L, -1) 
-           return self.out_projection(out), A
+        if get_attention : 
+           return self.out_projection(out), Att
            
         return self.out_projection(out)
         
-
 class TrmBlock(nn.Module):
-    def __init__(self, N, D, proj_dim, get_attention=False):
+    def __init__(self, N, D, proj_dim):
       super(TrmBlock, self).__init__()
 
       self.multivariate_attention= Attention(D, proj_dim)
@@ -82,11 +79,10 @@ class TrmBlock(nn.Module):
       self.layer_norm2 = nn.LayerNorm(D)
       self.dropout = nn.Dropout(0.1)
 
-      self.get_attention = get_attention
 
-    def forward(self, x):
-      if self.get_attention :
-          att, A = self.multivariate_attention(x,x,x)
+    def forward(self, x, get_attention=False):
+      if get_attention :
+          att, A = self.multivariate_attention(x,x,x, get_attention=get_attention)
       else : 
           att = self.multivariate_attention(x,x,x)
 
@@ -94,7 +90,7 @@ class TrmBlock(nn.Module):
       x_forward = self.feed_forward(x)
       x= self.layer_norm2(x + x_forward)
       
-      if self.get_attention :
+      if get_attention :
          return x, A
       return x
 
@@ -207,7 +203,7 @@ class TrmBlock_FFN_temporal(nn.Module):
 
 
 class iTransformer(nn.Module):
-    def __init__(self, N, T, D, S, proj_dim, num_blocks, use_norm=True, typeTrmBlock="inverted", get_attention=False):
+    def __init__(self, N, T, D, S, proj_dim, num_blocks, use_norm=True, typeTrmBlock="inverted"):
       super(iTransformer, self).__init__()
 
       self.embedding = Embedding_inverted(T, D)
@@ -239,9 +235,8 @@ class iTransformer(nn.Module):
       self.norm = nn.LayerNorm(D)
 
       self.liste_attention = []
-      self.get_attention = get_attention
         
-    def forward(self, x):
+    def forward(self, x, get_attention = False):
       #print("x : ",x.shape)
       if self.use_norm :
           means = x.mean(1, keepdim=True).detach()
@@ -252,8 +247,8 @@ class iTransformer(nn.Module):
       x = self.embedding(x)
       #print('emb : ',x.shape)
       for block in self.trmblock:
-            if self.get_attention : 
-                x, A = block(x)
+            if get_attention :
+                x, A = block(x, get_attention)
                 self.liste_attention.append(A)
             else : 
                 x = block(x)
