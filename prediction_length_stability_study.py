@@ -107,8 +107,10 @@ def main():
         dataset = liste_datasets[i]
 
         file_exists = os.path.isfile(f'{PATH}/{dataset}.csv')
-        res = pd.read_csv(f'{PATH}/{dataset}.csv')
-        done = (res.iloc[-1]["Longueur de prédiction"]==720)
+        
+        if file_exists :
+            res = pd.read_csv(f'{PATH}/{dataset}.csv')
+            done = (res.iloc[-1]["Longueur de prédiction"]==720)
 
         if not file_exists or not done : 
             n_train = liste_n_train[i]
@@ -122,7 +124,7 @@ def main():
     
             predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks)
         
-        break
+        
 
 
 
