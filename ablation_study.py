@@ -39,9 +39,9 @@ def save_scores(path, loss_mse, loss_mae, trm, i):
             mse = list(res.iloc[-1, 1::2][:-2])
             mae = list(res.iloc[-1, 2::2][:-2])
             mse_moyenne = np.mean(mse)
-            mse_variance = np.var(mae)
+            mse_variance = np.var(mse)
             
-            mae_moyenne = np.mean(mse)
+            mae_moyenne = np.mean(mae)
             mae_variance = np.var(mae)
             
             res.loc[res["Model"] == trm, "MSE Moyenne"] = mse_moyenne
