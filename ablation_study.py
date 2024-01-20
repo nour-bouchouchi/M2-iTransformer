@@ -23,7 +23,7 @@ def save_scores(path, loss_mse, loss_mae, trm, i):
 
         if not file_exists:
             writer = csv.writer(fichier_sortie)
-            writer.writerow(['Model', 'Run 1 (MSE)', 'Run 1 (MAE)', 'Run 2 (MSE)', 'Run 2 (MAE)', 'Run 3 (MSE)', 'MSE Moyenne', 'MSE Variance', 'MAE Moyenne', 'MAE Variance'])
+            writer.writerow(['Model', 'Run 1 (MSE)', 'Run 1 (MAE)', 'Run 2 (MSE)', 'Run 2 (MAE)', 'Run 3 (MSE)', 'Run 3 (MAE)', 'MSE Moyenne', 'MSE Variance', 'MAE Moyenne', 'MAE Variance'])
             writer.writerow([trm, loss_mse, loss_mae] )
         
         else :   
@@ -108,7 +108,7 @@ def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks):
             res = pd.read_csv(f'{PATH}/{dataset}_ablation.csv')
             ligne_done = pd.notna(res.iloc[-1]["MAE Variance"])
             last_done = res.iloc[-1]["Model"] 
-            trm_done = (last_done in liste_model[:i]) or (last_done==trm and ligne_done)
+            trm_done = (i < liste_model.index(last_done) ) or (last_done==trm and ligne_done)
         else : 
             trm_done = False
 
