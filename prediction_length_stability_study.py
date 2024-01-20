@@ -133,7 +133,7 @@ def main():
     liste_D = [512, 512, 512, 512, 512]
     liste_lr = [1e-4, 5*1e-4 , 1e-3, 1e-3, 1e-4] 
     liste_hidden_dim = [64, 64, 512 ,512, 512] 
-    liste_nb_blocks = [1, 2, 2, 2, 2] 
+    liste_nb_blocks = [2, 2, 2, 2, 1] 
 
     if not os.path.exists(f"{PATH}"):
         os.makedirs(f"{PATH}")
@@ -147,7 +147,7 @@ def main():
     
         if file_exists :
             res = pd.read_csv(f'{PATH}/{dataset}.csv')
-            done = (res.iloc[-1]["Longueur de prédiction"]==720)
+            done = (res.iloc[-1]["Longueur de prédiction"]==720) and pd.notna(res.iloc[-1]["MAE Variance"])
 
         if not file_exists or not done : 
             n_train = liste_n_train[i]
