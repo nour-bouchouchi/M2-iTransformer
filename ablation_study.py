@@ -100,7 +100,7 @@ def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks):
     """
     data = pd.read_csv(f'data/{dataset}.csv', header=None).to_numpy()
 
-    liste_model=["inverted", "Att_Att", "FFN_Att", "FFN_FFN", "Att_variate", "FFN_temporal"]
+    liste_model=["Att_Att", "FFN_Att", "FFN_FFN", "Att_variate", "FFN_temporal"]
     for i,trm in enumerate(liste_model) : 
         print(f" ----- Trm {trm} ----- ")
         file_exists = os.path.isfile(f'{PATH}/{dataset}_ablation.csv')

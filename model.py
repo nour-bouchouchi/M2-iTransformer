@@ -65,7 +65,7 @@ class Attention(nn.Module):
         out = V.reshape(B,L,-1)
 
         if get_attention : 
-           return self.out_projection(out), Att
+           return self.out_projection(out), scale * scores
            
         return self.out_projection(out)
         
