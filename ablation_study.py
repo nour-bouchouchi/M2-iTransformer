@@ -16,6 +16,10 @@ PATH = "resultats/ablation"
 
 
 def save_scores(path, loss_mse, loss_mae, trm, i):
+    """
+    Fonction permettant de sauvegarder les résultats au fur et à mesure pour l'ablation study. 
+    On conserve un score pour chaque seed testée et on calcule la moyenne et la variance de la MSE et MAE à la fin. 
+    """
     file_exists = os.path.isfile(path)
 
     with open(path, 'a' if file_exists else 'w', newline='') as fichier_sortie:
@@ -96,7 +100,6 @@ def predict_lookforward(dataset, train_loader, eval_loader, test_loader, N, trm,
 def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks): 
     """
     Permet de faire les prédictions pour un dataset donné 
-    dataset : path du dataset 
     """
     data = pd.read_csv(f'data/{dataset}.csv', header=None).to_numpy()
 

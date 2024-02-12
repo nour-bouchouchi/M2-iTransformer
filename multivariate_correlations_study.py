@@ -18,6 +18,9 @@ NB_TEST_PER_BATCH = 3
 
 
 def save(Att_first, Att_last, corr_lookback, corr_lookforward, nb_test, i):
+    """
+    Permet de sauvegarder les matrices de corrélation et poids d'attentions.  
+    """
     fig = plt.figure(figsize=(5, 5))
 
     ax1 = plt.subplot2grid((2, 2), (0, 0))
@@ -46,6 +49,10 @@ def save(Att_first, Att_last, corr_lookback, corr_lookforward, nb_test, i):
 
 
 def calcule_att_corr(itransformer, x, y, nb_test): 
+    """
+    Récupère les cartes d'attention pour les premières et dernières couches et calcule 
+    les matrice de correlation entre les modalités pour plusieurs exemples. 
+    """
     A_first = itransformer.liste_attention[0] #attention maps first layer
     A_last = itransformer.liste_attention[-1] #attention maps last layer
 
@@ -64,7 +71,12 @@ def calcule_att_corr(itransformer, x, y, nb_test):
 
         save(Att_first, Att_last, corr_lookback, corr_lookforward, nb_test, i)
 
+
 def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks):
+    """
+    Entraine un i transformer pour un dataset donné puis calcule et sauvegarde les cartes d'attention et 
+    les matrices de corrélation entre les modalités. 
+    """
     torch.manual_seed(7)
 
     data = pd.read_csv(f'data/{dataset}.csv', header=None).to_numpy()

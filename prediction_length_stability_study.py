@@ -14,6 +14,10 @@ BATCH_SIZE = 32
 PATH = "resultats/predictions"
 
 def save_scores(path, loss_mse, loss_mae, s, i):
+    """
+    Fonction permettant d'enregistrer les résultats au fur et à mesure avec 5 seeds pour chaque longueur de prédiction.  
+    Une fois les résultats calculés pour les 5 seeds, on calcule la moyenne et la variance. 
+    """
     file_exists = os.path.isfile(path)
 
     with open(path, 'a' if file_exists else 'w', newline='') as fichier_sortie:

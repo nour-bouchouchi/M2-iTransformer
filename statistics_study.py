@@ -10,6 +10,9 @@ BATCH_SIZE = 32
 
 
 def save_statistics(path, dataset,  mean_loss, var_loss , median_loss, top5_best_indices, top5_worst_indices, best_values, worst_values):
+    """
+    Fonction permettant d'enregistrer les statistiques (meilleures score, score moyen, meilleures et pire modalités)
+    """
     file_exists = os.path.isfile(path)
     with open(path, 'a' if file_exists else 'w', newline='') as fichier_sortie:
             writer = csv.writer(fichier_sortie)
@@ -22,6 +25,9 @@ def save_statistics(path, dataset,  mean_loss, var_loss , median_loss, top5_best
 
 
 def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks):
+    """
+    Fonction permettant d'entraîner un modèle et de calculer des statistiques sur les score et modalités. 
+    """
     torch.manual_seed(7)
 
     data = pd.read_csv(f'data/{dataset}.csv', header=None).to_numpy()

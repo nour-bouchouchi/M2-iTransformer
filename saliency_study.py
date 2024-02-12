@@ -12,6 +12,12 @@ BATCH_SIZE = 32
 PATH = "resultats/saliency"
 
 def perturbation_data(x, num_window, mod, mode="zero", size_window=1):
+    """
+    Permet d'applique la perturbation choisie sur la modalité selectionnée sur une window précise d'une taille donnée. 
+    On peut appliquer différent types de perturbation : mettre à 0 la partie des données perturbées, 
+    lui donner sur la plage de donnée, la valeur moyenne de la modalité,
+    ou lui donner la valeur moyennée sur l'ensemble des modalités à chaque temps t. 
+    """
     x_noisy = x.clone()
     if mode =="zero":
         x_noisy[num_window * size_window: (num_window+1) * size_window, mod] = 0
@@ -22,6 +28,9 @@ def perturbation_data(x, num_window, mod, mode="zero", size_window=1):
     return x_noisy
 
 def score(target, yhat, yhat_noisy):
+    """
+    Fonction permettant de calculer un score de différence de loss MSE avec et sans perturbation. 
+    """
     criterion = torch.nn.MSELoss()
     loss = criterion(target, yhat)
     loss_noisy = criterion(target, yhat_noisy)
@@ -31,6 +40,10 @@ def score(target, yhat, yhat_noisy):
 
 
 def saliency_map(dataset, itransformer, x, target, N, mode="zero", size_window=1, idx_ex=0):
+    """
+    Fonction permettant de créer et d'enregistrer la saliency map obtenue en effectuant en amont des perturbation et en 
+    calculant le score d'importance de la window considérée (différence de MSE avec et sans perturbation des données en entrée).
+    """
     saliency_map = np.zeros((N, LOOK_FORWARD//size_window))
     for mod in range(N):
         for num_window in range(LOOK_FORWARD//size_window): 
@@ -52,7 +65,9 @@ def saliency_map(dataset, itransformer, x, target, N, mode="zero", size_window=1
 
 
 def predict(dataset, train_loader, eval_loader, test_loader, N, lr, D, hidden_dim, nb_blocks, mode="zero", idx_ex=0, size_window=1):
-    
+    """
+    Fonction permettant de donnner calculer une saliency map pour un exemple donné. 
+    """
     itransformer = iTransformer(N, 96, D, 96, hidden_dim, nb_blocks).to(device)
     optimizer = torch.optim.Adam(itransformer.parameters(), lr=lr, weight_decay=1e-5)  
 

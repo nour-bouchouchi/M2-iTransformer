@@ -13,6 +13,9 @@ BATCH_SIZE = 32
 PATH = "resultats/generalization"
 
 class MonDataLoaderAllData(Dataset):
+    """
+    Classe implémentant une variante de notre DataLoader pour ne conserver que 20% des variates en entraînement. 
+    """
     def __init__(self, data, lookback_size, lookforward_size, scaler=None, indices=None):
         self.lookback_size = lookback_size
         self.lookforward_size = lookforward_size
@@ -46,6 +49,9 @@ class MonDataLoaderAllData(Dataset):
 
 
 def get_loaders_generalization(data, p, batch_size, n_train, n_eval, n_test, T=96, S=96):
+    """
+    Fonction permettant de retourner les dataloader de train, eval et test.
+    """
     train_data = data[:n_train + T + S]
     val_data = data[n_train:n_train + n_eval + T + S]
     test_data = data[n_train + n_eval:n_train + n_eval + n_test + T + S]
@@ -67,6 +73,10 @@ def get_loaders_generalization(data, p, batch_size, n_train, n_eval, n_test, T=9
 
 
 def save_scores(path, liste_loss_mse, liste_loss_mae):
+    """
+    Fonction permettant de sauvegarder progressivement les résultats pour chaque longyeur de prédiction considérée, 
+    on mesure les résultats pour 5 seeds puis on calcule la moyenne et la variance de la MSE et MAE. 
+    """
     with open(path, 'w', newline='') as fichier_sortie:
         writer = csv.writer(fichier_sortie)
 
@@ -123,7 +133,7 @@ def predict(dataset, n_train, n_eval, n_test, N, lr, D, hidden_dim, nb_blocks):
     liste_mse = []
     liste_mae = []
 
-    #on fait une partition des indices de variates
+    #on fait une partition des indices de variates : on entraînera donc sur 20% des variates à chaque fois
     idx_variates = np.arange(N)
     random_indices = np.random.permutation(idx_variates)
     partitions = np.array_split(random_indices, 5)

@@ -5,6 +5,9 @@ import torch
 from torch.utils.data import Dataset
 
 class MonDataLoaderAllData(Dataset):
+    """
+    Classe permettant d'obtenir un dataloader pour des données
+    """
     def __init__(self, data, lookback_size, lookforward_size, scaler=None):     
         self.lookback_size = lookback_size
         self.lookforward_size = lookforward_size
@@ -33,6 +36,9 @@ class MonDataLoaderAllData(Dataset):
 
 
 def get_loaders(data, batch_size, n_train, n_eval, n_test, T=96, S=96):
+    """
+    Fonction retournant le data loader de train, eval et test (dont on spécifie en entrée la taille). 
+    """
     train_data = data[ : n_train+T+S]
     val_data = data[n_train : n_train+n_eval+T+S]
     test_data = data[n_train+n_eval : n_train+n_eval+n_test+T+S]

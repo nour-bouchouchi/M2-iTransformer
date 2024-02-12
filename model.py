@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 
 class Embedding_inverted(nn.Module):
+    """
+    Classe permettant de faire l'embedding inversé de iTransformer avec une vue par modalité.
+    """
     def __init__(self, T, D):
         super(Embedding_inverted, self).__init__()
         self.emb = nn.Linear(T, D)
@@ -13,6 +16,9 @@ class Embedding_inverted(nn.Module):
         return self.dropout(x_emb)
 
 class FeedForward(nn.Module):
+    """
+    Classe implémentant le feed-forward du iTransformer (porte sur la temporalité).
+    """
     def __init__(self, D):
         super(FeedForward, self).__init__()
         self.feed_forward = nn.Sequential(
@@ -35,6 +41,9 @@ class FeedForward(nn.Module):
 
     
 class Attention(nn.Module):
+    """
+    Classe implémentant le mécanisme d'attention du iTransformer (porte sur les modalités).
+    """
     def __init__(self, D, proj_dim, nb_head=8):
         super(Attention, self).__init__()
         self.query_projection = nn.Linear(D, proj_dim)
@@ -70,6 +79,10 @@ class Attention(nn.Module):
         return self.out_projection(out)
         
 class TrmBlock(nn.Module):
+    """
+    Classe implémentant le bloc du iTransformer composé du mécanisme d'attention (sur les modalités), 
+    du feed forward (sur la temporalité) ainsi que les normalisations (layer norm). 
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock, self).__init__()
 
@@ -96,6 +109,10 @@ class TrmBlock(nn.Module):
 
 
 class TrmBlock_Att_Att(nn.Module): 
+    """
+    Classe implémentant la variante du Transformer pour laquelle on utilise un mécanisme d'attention pour 
+    la vue sur les modalités ainsi que pour la vue temporelle. 
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock_Att_Att, self).__init__()
 
@@ -119,6 +136,10 @@ class TrmBlock_Att_Att(nn.Module):
       return x
 
 class TrmBlock_FFN_Att(nn.Module): 
+    """
+    Classe implémentant une variante du Transformer pour laquelle utilise un feed forward pour la vue sur les modalités 
+    et un mécanisme d'attention pour la notion de temporalité. 
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock_FFN_Att, self).__init__()
 
@@ -148,6 +169,10 @@ class TrmBlock_FFN_Att(nn.Module):
       return x
 
 class TrmBlock_FFN_FFN(nn.Module): 
+    """
+    Classe implémentant une variante du Transformer pour laquelle on utilise un feed forward non seulement 
+    sur les modalités mais aussi pour la temporalité. 
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock_FFN_FFN, self).__init__()
 
@@ -175,6 +200,10 @@ class TrmBlock_FFN_FFN(nn.Module):
 
 
 class TrmBlock_Att_variate(nn.Module): 
+    """
+    Classe implémentant une variante du Transformer ne contenant qu'un unique mécanisme d'attention portant sur les modalités
+    (étude par ablation).
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock_Att_variate, self).__init__()
 
@@ -189,6 +218,10 @@ class TrmBlock_Att_variate(nn.Module):
 
 
 class TrmBlock_FFN_temporal(nn.Module): 
+    """
+    Classe implémentant une variante du Transformer ne contenant qu'un unique feed forward portant la temporalité
+    (étude par ablation).
+    """
     def __init__(self, N, D, proj_dim):
       super(TrmBlock_FFN_temporal, self).__init__()
 
@@ -203,6 +236,17 @@ class TrmBlock_FFN_temporal(nn.Module):
 
 
 class iTransformer(nn.Module):
+    """
+    Classe implémentant le Transformer et reprenant l'embedding inversé ainsi qu'un nombre pré-défini de blocs Transformer. 
+    N : le nombre de modalités 
+    T : la longueur de la série temporelle en entrée (lookback size)
+    D : la dimension de l'embedding
+    S : la longueur de la série temporelle en sortie (horizon)
+    proj_dim : dimension de la projection lors du feed forward (hidden dim)
+    num_block : nombre de block transformer
+    use_norm : utilisation ou non d'une normalisation des données 
+    typeTrmBlock : variante du bloc transformer utilisé (par défaut on utilise le iTransformer)
+    """
     def __init__(self, N, T, D, S, proj_dim, num_blocks, use_norm=True, typeTrmBlock="inverted"):
       super(iTransformer, self).__init__()
 

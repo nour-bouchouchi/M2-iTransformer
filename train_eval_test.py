@@ -3,6 +3,9 @@ import torch.nn as nn
 import numpy as np
 
 class MAELoss(nn.Module):
+    """
+    Fonction qui calcule la perte moyenne absolue entre les prédictions et les targets.
+    """
     def __init__(self):
         super(MAELoss, self).__init__()
 
@@ -10,6 +13,9 @@ class MAELoss(nn.Module):
         return torch.mean(torch.abs(input - target))
 
 def eval(model, val_loader, device, criterion, writer, epoch):
+    """
+    Fonction permattant d'évaluer le modèle sur un ensemble de validation lors de l'entraînement du modèle
+    """
     model.eval()
 
     epoch_loss = []
@@ -37,6 +43,9 @@ def eval(model, val_loader, device, criterion, writer, epoch):
         return np.mean(epoch_loss)
         
 def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=None, patience=3):
+    """
+    Fonction permettant d'entraîner le modèle
+    """
     criterion = nn.MSELoss()
 
     loss_values = []
@@ -82,6 +91,9 @@ def train(model, optimizer, train_loader, val_loader, nb_epoch, device, writer=N
     return loss_values, loss_eval
 
 def test(model, test_loader, device):
+    """
+    Fonction permettant de tester le modèle
+    """
     model.eval()
     criterion = nn.MSELoss()
     maeLoss = MAELoss()
